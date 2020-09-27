@@ -16,6 +16,8 @@ protocol GameState {
 	
 	var showRandomBtn: Bool { get }
 	
+	var  showNextBtn: Bool { get }
+	
 	func onClick(square: Square)
 	
 	func next()
@@ -29,6 +31,8 @@ extension GameState {
 	var mainButtonText: String? { nil }
 	
 	var showRandomBtn: Bool { false }
+	
+	var showNextBtn: Bool { false }
 }
 
 struct SelectFlagState: GameState {
@@ -61,6 +65,8 @@ struct SelectTrapState: GameState {
 	let textMsg = "Select Trap"
 	
 	func onClick(square: Square) {
+		guard square.type != .Flag else { return }
+		
 		model.loading = true
 		let (row, col) = square.position
 		let body = SelectSquareDto(token: Shared.token, gameId: model.gameId, row: row, col: col)
@@ -86,7 +92,8 @@ struct SelectTrapState: GameState {
 struct RandomRpsState: GameState {
 	let textMsg = "randomize RPS, then click next"
 	let mainButtonText = "Next"
-	let showRandomBtn: Bool = true
+	let showRandomBtn = true
+	let showNextBtn = true
 	
 	func onClick(square: Square) {}
 	
@@ -192,28 +199,26 @@ struct SelectMoveState: GameState {
 				guard case let .success(payload) = result else { return }
 				
 				if let battle = payload.battle { //do battle
-					var delay: TimeInterval = 0.3
+					var delay: TimeInterval = 0.4
 					if let sType = payload.s_type { //reveal
 						delay *= 2
-						let type = model.pawnFrom(sType)
+						let type: PawnType = .from(string: sType)
 						withAnimation {
 							model.board[to.row][to.col].type = type
 						}
 					}
 					
 					post(delay: delay) {
-						if battle > 0 { //win
-							withAnimation {
+						withAnimation {
+							if battle > 0 { //win
 								model.move(from: selected, to: square)
-							}
-						} else if battle < 0 { //lose
-							let from = selected.position
-							withAnimation {
+							} else if battle < 0 { //lose
+								let from = selected.position
 								model.board[from.row][from.col].type = .None
 								model.board[from.row][from.col].isMine = false
+							} else { //draw
+								model.draw.showDraw = true
 							}
-						} else { //draw
-							//TODO: implement
 						}
 					}
 				} else {
@@ -256,24 +261,21 @@ struct WaitingState: GameState {
 			var delay: TimeInterval = 0.3
 			if let sType = move.s_type { //reveal
 				delay *= 2
-				let type = model.pawnFrom(sType)
+				let type: PawnType = .from(string: sType)
 				withAnimation {
 					model.board[from.row][from.col].type = type
 				}
 			}
 			
 			post(delay: delay) {
-				if battle > 0 { //win
-					withAnimation {
+				withAnimation {
+					if battle > 0 { //win
 						model.move(from: from, to: to)
-					}
-				} else if battle < 0 { //lose
-					withAnimation {
+					} else if battle < 0 { //lose
 						model.board[from.row][from.col].type = .None
-//						model.board[from.row][from.col].isMine = false
+					} else { //draw
+						model.draw.showDraw = true
 					}
-				} else { //draw
-					//TODO: implement
 				}
 			}
 		} else {
@@ -283,36 +285,6 @@ struct WaitingState: GameState {
 		}
 		
 		model.state = MyTurnState()
-		
-		/*
-		//reusable inner function
-		fun battle(result: Int) {
-		context.doneBtn.postDelayed({
-		Moves.battle(result, fromSquare, toSquare, context.gameId)
-		
-		if (json.has("winner")) context.gameOver(false)
-		else context.state = MyTurnState(context)
-		}, 500) //wait then receive attack
-		}
-		
-		if (json.has("battle")) {
-		val result = json["battle"] as Int
-		
-		toSquare.img.colorFilter?.let { context.doneBtn.post { Moves.clearColorFilter(toSquare.img) } }//indicate my RPS is visible to opponent(if not already)
-		if (json.has("s_type")) { //reveal unknown opponent
-		fromSquare.type = Square.Type.valueOf(json["s_type"].toString().toLowerCase().capitalize())
-		fromSquare.img.post {
-		Moves.reveal(fromSquare) {
-		battle(result)
-		}
-		}
-		} else battle(result)
-		} else context.doneBtn.post {
-		Moves.moveTo(fromSquare, toSquare)
-		context.state = MyTurnState(context)
-		}
-		}
-		*/
 	}
 }
 

@@ -13,42 +13,51 @@ struct GameView: View {
 	
 	var body: some View {
 		
-		VStack(spacing: 30) {
-			BoardView(board: model.board, onClick: model.onClick)
-			
-			VStack {
-				HStack {
-					if model.showRandomBtn {
-						Button(action: model.randomRPS) {
-							Text("Random RPS")
+		ZStack {
+			VStack(spacing: 30) {
+				BoardView(board: model.board, onClick: model.onClick)
+				
+				VStack {
+					
+					Text(model.message)
+						.foregroundColor(.secondary)
+					
+					HStack {
+						if model.showRandomBtn {
+							Button(action: model.randomRPS) {
+								Text("Random RPS")
+							}
+							.padding(10)
+							.background(Color.blue)
+							.foregroundColor(.white)
+							.cornerRadius(10)
 						}
-						.padding(10)
-						.background(Color.blue)
-						.foregroundColor(.white)
-						.cornerRadius(10)
+						
+						Spacer()
+						
+						if model.showNextBtn {
+							Button {
+								model.next()
+							} label: {
+								Text("Next")
+							}
+							.padding(10)
+							.background(Color.blue)
+							.foregroundColor(.white)
+							.cornerRadius(10)
+						}
+					}.padding(.horizontal)
+					
+					if model.loading {
+						ProgressView()
 					}
 					
 					Spacer()
-					
-					Button {
-						model.next()
-					} label: {
-						Text("Next")
-					}
-					.padding(10)
-					.background(Color.blue)
-					.foregroundColor(.white)
-					.cornerRadius(10)
-				}.padding(.horizontal)
-				
-				Text(model.message)
-					.foregroundColor(.secondary)
-				
-				if model.loading {
-					ProgressView()
 				}
-				
-				Spacer()
+			}
+			
+			if model.draw.showDraw {
+				DrawView(draw: $model.draw)
 			}
 		}
 	}

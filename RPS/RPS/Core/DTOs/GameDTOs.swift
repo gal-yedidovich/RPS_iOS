@@ -50,3 +50,14 @@ struct MoveRespDto: Decodable {
 	let battle: Int?
 	let s_type: String?
 }
+
+struct DrawDecision: Encodable {
+	let token = Shared.token
+	let gameId = GameModel.instance.gameId
+	let decision: String
+}
+
+struct DrawResult: Decodable {
+	let opponent: String
+	let result: Int
+}

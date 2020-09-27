@@ -34,7 +34,7 @@ struct BoardSquareView: View {
 	}
 	
 	var backColor: Color {
-		if square.highlighted && !square.hidden { return .green }
+		if square.highlighted && square.type != .Hidden { return .green }
 
 		switch (square.isMine, square.type) {
 		case (_, .Hidden): return .blue
@@ -46,6 +46,6 @@ struct BoardSquareView: View {
 
 struct BoardSquareView_Previews: PreviewProvider {
 	static var previews: some View {
-		BoardSquareView(onClick: {_ in}, square: Square(position: (0,0), isMine: false, type: .Flag, highlighted: true))
+		BoardSquareView(onClick: {_ in}, square: Square(position: (0,0), isMine: true, type: .None, highlighted: true))
 	}
 }
