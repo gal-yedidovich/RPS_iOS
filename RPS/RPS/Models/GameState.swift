@@ -53,7 +53,7 @@ struct SelectFlagState: GameState {
 	}
 	
 	func onReceive(data: Data) {
-		if gameMsgType(from: data) == .opponentReady {
+		if GameMsgType.from(data: data) == .opponentReady {
 			model.opponentReady = true
 		}
 	}
@@ -83,7 +83,7 @@ struct SelectTrapState: GameState {
 	func next() {}
 	
 	func onReceive(data: Data) {
-		if gameMsgType(from: data) == .opponentReady {
+		if GameMsgType.from(data: data) == .opponentReady {
 			model.opponentReady = true
 		}
 	}
@@ -117,7 +117,7 @@ struct RandomRpsState: GameState {
 	}
 	
 	func onReceive(data: Data) {
-		if gameMsgType(from: data) == .opponentReady {
+		if GameMsgType.from(data: data) == .opponentReady {
 			model.opponentReady = true
 		}
 	}
@@ -132,7 +132,7 @@ struct ReadyState: GameState {
 	func next() {}
 	
 	func onReceive(data: Data) {
-		if gameMsgType(from: data) == .opponentReady {
+		if GameMsgType.from(data: data) == .opponentReady {
 			model.opponentReady = true
 			model.state = myTurn ? MyTurnState() : WaitingState()
 		}
@@ -217,7 +217,7 @@ struct SelectMoveState: GameState {
 								model.board[from.row][from.col].type = .None
 								model.board[from.row][from.col].isMine = false
 							} else { //draw
-								model.draw.showDraw = true
+								model.draw.show(from: selected.position, to: square.position, myTurn: true)
 							}
 						}
 					}
@@ -249,7 +249,7 @@ struct WaitingState: GameState {
 	func next() {}
 	
 	func onReceive(data: Data) {
-		guard gameMsgType(from: data) == .move else { return }
+		guard GameMsgType.from(data: data) == .move else { return }
 		let move: OpponentMoveDto = try! .from(json: data)
 		
 		//rotate position
@@ -274,7 +274,7 @@ struct WaitingState: GameState {
 					} else if battle < 0 { //lose
 						model.board[from.row][from.col].type = .None
 					} else { //draw
-						model.draw.showDraw = true
+						model.draw.show(from: from, to: to, myTurn: false)
 					}
 				}
 			}

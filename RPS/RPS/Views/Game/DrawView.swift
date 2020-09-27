@@ -9,6 +9,7 @@ import SwiftUI
 import BasicExtensions
 
 struct DrawView: View {
+	let model: GameModel
 	@Binding var draw: DrawModel
 	
 	var body: some View {
@@ -53,7 +54,7 @@ struct DrawView: View {
 	func drawButton(type: PawnType, isMine: Bool = true) -> some View {
 		Button {
 			draw.selection = type
-			sendDraw(type: type)
+			model.sendDrawDecision(type: type)
 		} label: {
 			Image(systemName: type.rawValue)
 				.resizable()
@@ -65,38 +66,11 @@ struct DrawView: View {
 		}
 		.disabled(!isMine || draw.selection != .None)
 	}
-	
-	func sendDraw(type: PawnType) {
-		let body = DrawDecision(decision: type.string)
-		
-		HttpClient.Game.send(to: .draw, body: body) { result in
-			guard case let .success(payload) = result,
-				  let drawResult: DrawResult = try? .from(json: payload) else { return }
-			
-			withAnimation() {
-				draw.hidingOpponentSelection = false
-			}
-			
-			post(delay: 0.5) {
-				withAnimation() {
-					draw.opponentSelection = .from(string: drawResult.opponent)
-				}
-			}
-			
-			post(delay: 1.5) {
-				withAnimation() {
-					draw.showDraw = false
-					draw.result = drawResult.result
-				}
-			}
-			
-		}
-	}
 }
 
 struct DrawView_Previews: PreviewProvider {
 	static var previews: some View {
-		DrawView(draw: Binding.constant(DrawModel()))
+		DrawView(model: GameModel.instance, draw: Binding.constant(DrawModel()))
 	}
 }
 

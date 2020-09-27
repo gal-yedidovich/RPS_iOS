@@ -57,7 +57,7 @@ struct GameView: View {
 			}
 			
 			if model.draw.showDraw {
-				DrawView(draw: $model.draw)
+				DrawView(model: GameModel.instance, draw: $model.draw)
 			}
 		}
 	}

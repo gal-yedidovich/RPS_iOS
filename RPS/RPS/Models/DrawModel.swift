@@ -10,7 +10,17 @@ import Foundation
 struct DrawModel {
 	var selection: PawnType = .None
 	var opponentSelection: PawnType = .None
-	var showDraw = true
+	var showDraw = false
 	var hidingOpponentSelection = true
-	var result: Int? = nil
+	var from, to: Position!
+	var myTurn: Bool!
+	
+	mutating func show(from: Position, to: Position, myTurn: Bool) {
+		showDraw = true
+		self.myTurn = myTurn
+		self.from = from
+		self.to = to
+	}
 }
+
+typealias Position = (row: Int, col: Int)

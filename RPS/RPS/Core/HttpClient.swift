@@ -75,16 +75,6 @@ enum HttpClient {
 	}
 }
 
-func lobbyMsgType(from data: Data) -> LobbyMsgType? {
-	guard let type: SocketMessageType = try? .from(json: data) else { return nil }
-	return LobbyMsgType(rawValue: type.type)
-}
-
-func gameMsgType(from data: Data) -> GameMsgType? {
-	guard let type: SocketMessageType = try? .from(json: data) else { return nil }
-	return GameMsgType(rawValue: type.type)
-}
-
 struct SocketMessageType: Decodable {
 	let type: String
 }
@@ -95,11 +85,22 @@ enum LobbyMsgType: String {
 		 newChatMsg = "msg",
 		 invite = "invite",
 		 answer = "answer"
+	
+	static func from(data: Data) -> LobbyMsgType? {
+		guard let type: SocketMessageType = try? .from(json: data) else { return nil }
+		return LobbyMsgType(rawValue: type.type)
+	}
 }
 
 enum GameMsgType: String {
 	case opponentReady = "opponent ready"
 	case move = "move"
+	case draw = "draw"
+	
+	static func from(data: Data) -> GameMsgType? {
+		guard let type: SocketMessageType = try? .from(json: data) else { return nil }
+		return GameMsgType(rawValue: type.type)
+	}
 }
 
 enum Errors: Error {

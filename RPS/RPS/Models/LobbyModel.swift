@@ -22,7 +22,7 @@ class LobbyModel: ObservableObject {
 	}
 	
 	func onReceived(data: Data) {
-		switch lobbyMsgType(from: data) {
+		switch LobbyMsgType.from(data: data) {
 		case .newUser:
 			let newPlayer: LobbyPlayer = try! .from(json: data)
 			if !lobbyPlayers.contains(where: { $0.token == newPlayer.token }) {
