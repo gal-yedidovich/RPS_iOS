@@ -46,7 +46,7 @@ struct SelectFlagState: GameState {
 			model.loading = false
 			
 			if case .success = result {
-				model.board[row][col].type = .Flag
+				model.board[square.position].type = .Flag
 				model.state = SelectTrapState()
 			}
 		}
@@ -74,7 +74,7 @@ struct SelectTrapState: GameState {
 			model.loading = false
 			
 			if case .success = result {
-				model.board[row][col].type = .Trap
+				model.board[square.position].type = .Trap
 				model.state = RandomRpsState()
 			}
 		}
@@ -129,8 +129,7 @@ struct RandomRpsState: GameState {
 		
 		for i in 0..<squares.count {
 			withAnimation(Animation.default.delay(Double(i) / 8)) {
-				let (row, col) = squares[i].position
-				model.board[row][col].hidden = true
+				model.board[squares[i].position].hidden = true
 			}
 		}
 	}
@@ -162,21 +161,27 @@ struct MyTurnState: GameState {
 		let (x, y) = square.position
 		let board = model.board
 		var highlighted: [Square] = []
-		if x > 0 && !board[x - 1][y].isMine {
-			model.board[x - 1][y].highlighted = true
-			highlighted.append(model.board[x - 1][y])
+		
+		let topPos = (x - 1, y)
+		let bottomPos = (x + 1, y)
+		let leftPos = (x, y - 1)
+		let rightPos = (x, y + 1)
+		
+		if x > 0 && !board[topPos].isMine {
+			model.board[topPos].highlighted = true
+			highlighted.append(model.board[topPos])
 		}
-		if x < BOARD_SIZE - 1 && !board[x + 1][y].isMine {
-			model.board[x + 1][y].highlighted = true
-			highlighted.append(model.board[x + 1][y])
+		if x < BOARD_SIZE - 1 && !board[bottomPos].isMine {
+			model.board[bottomPos].highlighted = true
+			highlighted.append(model.board[bottomPos])
 		}
-		if y > 0 && !board[x][y - 1].isMine {
-			model.board[x][y - 1].highlighted = true
-			highlighted.append(model.board[x][y - 1])
+		if y > 0 && !board[leftPos].isMine {
+			model.board[leftPos].highlighted = true
+			highlighted.append(model.board[leftPos])
 		}
-		if y < BOARD_SIZE - 1 && !board[x][y + 1].isMine {
-			model.board[x][y + 1].highlighted = true
-			highlighted.append(model.board[x][y + 1])
+		if y < BOARD_SIZE - 1 && !board[rightPos].isMine {
+			model.board[rightPos].highlighted = true
+			highlighted.append(model.board[rightPos])
 		}
 		
 		model.state = SelectMoveState(selected: square, highlighted: highlighted)
@@ -199,8 +204,7 @@ struct SelectMoveState: GameState {
 		let isHighlighted = square.highlighted
 		
 		for s in highlighted {
-			let (x, y) = s.position
-			model.board[x][y].highlighted = false
+			model.board[s.position].highlighted = false
 		}
 		
 		if isHighlighted {
@@ -212,35 +216,7 @@ struct SelectMoveState: GameState {
 				guard case let .success(payload) = result else { return }
 				
 				if let battle = payload.battle { //do battle
-					if selected.hidden {
-						let (row, col) = selected.position
-						withAnimation {
-							model.board[row][col].hidden = false
-						}
-					}
-					
-					var delay: TimeInterval = 0.4
-					if let sType = payload.s_type { //reveal
-						delay *= 2
-						let type: PawnType = .from(string: sType)
-						withAnimation {
-							model.board[to.row][to.col].type = type
-						}
-					}
-					
-					post(delay: delay) {
-						withAnimation {
-							if battle > 0 { //win
-								model.move(from: selected, to: square)
-							} else if battle < 0 { //lose
-								let from = selected.position
-								model.board[from.row][from.col].type = .None
-								model.board[from.row][from.col].isMine = false
-							} else { //draw
-								model.draw.show(from: selected.position, to: square.position, myTurn: true)
-							}
-						}
-					}
+					model.battle(attacker: selected.position, target: square.position, result: battle, reveal: payload.s_type)
 				} else {
 					model.move(from: selected, to: square)
 				}
@@ -278,33 +254,7 @@ struct WaitingState: GameState {
 		let to = (row: size - 1 - move.to.row, col: size - 1 - move.to.col)
 		
 		if let battle = move.battle {
-			if model.board[to.row][to.col].hidden {
-				let (row, col) = to
-				withAnimation {
-					model.board[row][col].hidden = false
-				}
-			}
-			
-			var delay: TimeInterval = 0.4
-			if let sType = move.s_type { //reveal
-				delay *= 2
-				let type: PawnType = .from(string: sType)
-				withAnimation {
-					model.board[from.row][from.col].type = type
-				}
-			}
-			
-			post(delay: delay) {
-				withAnimation {
-					if battle > 0 { //win
-						model.move(from: from, to: to)
-					} else if battle < 0 { //lose
-						model.board[from.row][from.col].type = .None
-					} else { //draw
-						model.draw.show(from: from, to: to, myTurn: false)
-					}
-				}
-			}
+			model.battle(attacker: from, target: to, result: battle, reveal: move.s_type)
 		} else {
 			withAnimation {
 				model.move(from: from, to: to)

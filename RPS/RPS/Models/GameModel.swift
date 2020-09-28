@@ -81,13 +81,52 @@ class GameModel: ObservableObject {
 	}
 	
 	func move(from: Position, to: Position) {
-		let copy = board[from.row][from.col]
-		board[from.row][from.col].type = .None
-		board[from.row][from.col].hidden = false
-		board[from.row][from.col].isMine = false
-		board[to.row][to.col].type = copy.type
-		board[to.row][to.col].hidden = copy.hidden
-		board[to.row][to.col].isMine = copy.isMine
+		let copy = board[from]
+		
+		board.mutate(at: from) {
+			$0.type = .None
+			$0.hidden = false
+			$0.isMine = false
+		}
+		board.mutate(at: to) {
+			$0.type = copy.type
+			$0.hidden = copy.hidden
+			$0.isMine = copy.isMine
+		}
+	}
+	
+	func battle(attacker: Position, target: Position, result: Int, reveal: String?) {
+		let myTurn = board[attacker].isMine
+		
+		withAnimation {
+			board[attacker].hidden = false
+			board[target].hidden = false
+		}
+		
+		var delay: TimeInterval = 0.4
+		if let sType = reveal { //reveal
+			delay *= 2 //increase delay for UX
+			let type: PawnType = .from(string: sType)
+			
+			withAnimation {
+				board[myTurn ? target : attacker].type = type
+			}
+		}
+		
+		post(delay: delay) {
+			withAnimation {
+				if result > 0 { //win
+					self.move(from: attacker, to: target)
+				} else if result < 0 { //lose
+					self.board.mutate(at: attacker) {
+						$0.type = .None
+						$0.isMine = false
+					}
+				} else { //draw
+					self.draw.show(from: attacker, to: target, myTurn: myTurn)
+				}
+			}
+		}
 	}
 	
 	func sendDrawDecision(type: PawnType) {
@@ -127,8 +166,8 @@ class GameModel: ObservableObject {
 				let (fromType, toType) = self.draw.myTurn
 					? (self.draw.selection, self.draw.opponentSelection)
 					: (self.draw.opponentSelection, self.draw.selection)
-				self.board[from.row][from.col].type = fromType
-				self.board[to.row][to.col].type = toType
+				self.board[from].type = fromType
+				self.board[to].type = toType
 			}
 		}
 		
@@ -138,8 +177,10 @@ class GameModel: ObservableObject {
 				if drawResult.result > 0 {
 					self.move(from: from, to: to)
 				} else if drawResult.result < 0 {
-					self.board[from.row][from.col].type = .None
-					self.board[from.row][from.col].isMine = false
+					self.board.mutate(at: from) {
+						$0.type = .None
+						$0.isMine = false
+					}
 				} else {
 					self.draw.show(from: from, to: to, myTurn: self.draw.myTurn)
 				}
@@ -161,5 +202,24 @@ class GameModel: ObservableObject {
 		}
 		
 		return board
+	}
+}
+
+
+extension Array where Element == Array<Square> {
+	mutating func mutate(at position: Position, block: (inout Square)->()) {
+		let (row, col) = position
+		var square = self[row][col]
+		block(&square)
+		self[row][col] = square
+	}
+	
+	subscript(position: Position) -> Square {
+		get {
+			self[position.col][position.col]
+		}
+		set {
+			self[position.col][position.col] = newValue
+		}
 	}
 }
