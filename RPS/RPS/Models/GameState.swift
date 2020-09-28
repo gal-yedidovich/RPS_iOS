@@ -113,12 +113,25 @@ struct RandomRpsState: GameState {
 			} else {
 				model.state = ReadyState(myTurn: myTurn)
 			}
+			
+			hideMySquares()
 		}
 	}
 	
 	func onReceive(data: Data) {
 		if GameMsgType.from(data: data) == .opponentReady {
 			model.opponentReady = true
+		}
+	}
+	
+	private func hideMySquares() {
+		let squares = model.board[5..<7].flatMap { $0 }
+		
+		for i in 0..<squares.count {
+			withAnimation(Animation.default.delay(Double(i) / 8)) {
+				let (row, col) = squares[i].position
+				model.board[row][col].hidden = true
+			}
 		}
 	}
 }
@@ -199,6 +212,13 @@ struct SelectMoveState: GameState {
 				guard case let .success(payload) = result else { return }
 				
 				if let battle = payload.battle { //do battle
+					if selected.hidden {
+						let (row, col) = selected.position
+						withAnimation {
+							model.board[row][col].hidden = false
+						}
+					}
+					
 					var delay: TimeInterval = 0.4
 					if let sType = payload.s_type { //reveal
 						delay *= 2
@@ -258,7 +278,14 @@ struct WaitingState: GameState {
 		let to = (row: size - 1 - move.to.row, col: size - 1 - move.to.col)
 		
 		if let battle = move.battle {
-			var delay: TimeInterval = 0.3
+			if model.board[to.row][to.col].hidden {
+				let (row, col) = to
+				withAnimation {
+					model.board[row][col].hidden = false
+				}
+			}
+			
+			var delay: TimeInterval = 0.4
 			if let sType = move.s_type { //reveal
 				delay *= 2
 				let type: PawnType = .from(string: sType)

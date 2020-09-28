@@ -81,13 +81,13 @@ class GameModel: ObservableObject {
 	}
 	
 	func move(from: Position, to: Position) {
-		let sq = board[from.row][from.col]
-		let type = sq.type
-		let isMine = sq.isMine
+		let copy = board[from.row][from.col]
 		board[from.row][from.col].type = .None
+		board[from.row][from.col].hidden = false
 		board[from.row][from.col].isMine = false
-		board[to.row][to.col].type = type
-		board[to.row][to.col].isMine = isMine
+		board[to.row][to.col].type = copy.type
+		board[to.row][to.col].hidden = copy.hidden
+		board[to.row][to.col].isMine = copy.isMine
 	}
 	
 	func sendDrawDecision(type: PawnType) {

@@ -21,6 +21,7 @@ struct BoardSquareView: View {
 					.scaledToFit()
 					.padding(5)
 					.foregroundColor(color)
+					.opacity(square.hidden ? 0.65 : 1)
 			}
 		}
 		.frame(width: 45, height: 45)
@@ -28,7 +29,7 @@ struct BoardSquareView: View {
 	}
 	
 	var color: Color {
-		square.isMine ? square.hidden ? .pink : .red
+		square.isMine ? .red
 			: square.type != .None ? .blue
 			: .clear
 	}
@@ -46,6 +47,6 @@ struct BoardSquareView: View {
 
 struct BoardSquareView_Previews: PreviewProvider {
 	static var previews: some View {
-		BoardSquareView(onClick: {_ in}, square: Square(position: (0,0), isMine: true, type: .None, highlighted: true))
+		BoardSquareView(onClick: {_ in}, square: Square(position: (0,0), isMine: true, type: .Flag, highlighted: true))
 	}
 }
