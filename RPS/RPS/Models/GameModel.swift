@@ -95,7 +95,7 @@ class GameModel: ObservableObject {
 		}
 	}
 	
-	func battle(attacker: Position, target: Position, result: Int, reveal: String?) {
+	func battle(attacker: Position, target: Position, result: Int, reveal: String?, winner winnerToken: Int?) {
 		let myTurn = board[attacker].isMine
 		
 		withAnimation {
@@ -125,6 +125,12 @@ class GameModel: ObservableObject {
 				} else { //draw
 					self.draw.show(from: attacker, to: target, myTurn: myTurn)
 				}
+			}
+			
+			if let _ = winnerToken {
+				self.gameOver(won: myTurn)
+			} else {
+				self.state = myTurn ? WaitingState() : MyTurnState()
 			}
 		}
 	}
@@ -188,6 +194,33 @@ class GameModel: ObservableObject {
 		}
 	}
 	
+	func gameOver(won: Bool) {
+		self.won = won
+		state = GameOverState(won: won)
+		killSquares(mine: !won)
+	}
+	
+	private func killSquares(mine: Bool) {
+		let positions = board.flatMap { row in
+			row.filter { square in
+				if won {
+					return !square.isMine && square.type != .None
+				} else {
+					return square.isMine
+				}
+			}.map { $0.position }
+		}
+		
+		for i in 0..<positions.count {
+			withAnimation(Animation.default.delay(Double(i) / 8)) {
+				self.board.mutate(at: positions[i]) { square in
+					square.type = .None
+					square.isMine = false
+				}
+			}
+		}
+	}
+	
 	private static var initialBaord: [[Square]] {
 		var board: [[Square]] = []
 		
@@ -216,10 +249,10 @@ extension Array where Element == Array<Square> {
 	
 	subscript(position: Position) -> Square {
 		get {
-			self[position.col][position.col]
+			self[position.row][position.col]
 		}
 		set {
-			self[position.col][position.col] = newValue
+			self[position.row][position.col] = newValue
 		}
 	}
 }

@@ -30,7 +30,7 @@ struct OpponentMoveDto: Decodable {
 	let to: SquarePosition
 	let battle: Int?
 	let s_type: String?
-	let winner: String?
+	let winner: Int?
 }
 
 struct SquarePosition: Codable {
@@ -49,6 +49,7 @@ struct MoveDto: Encodable {
 struct MoveRespDto: Decodable {
 	let battle: Int?
 	let s_type: String?
+	let winner: Int?
 }
 
 struct DrawDecision: Encodable {

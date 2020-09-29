@@ -216,12 +216,11 @@ struct SelectMoveState: GameState {
 				guard case let .success(payload) = result else { return }
 				
 				if let battle = payload.battle { //do battle
-					model.battle(attacker: selected.position, target: square.position, result: battle, reveal: payload.s_type)
+					model.battle(attacker: selected.position, target: square.position, result: battle, reveal: payload.s_type, winner: payload.winner)
 				} else {
 					model.move(from: selected, to: square)
+					model.state = WaitingState()
 				}
-				
-				model.state = WaitingState() //TODO: change to WaitingState
 			}
 		} else {
 			model.state = MyTurnState()
@@ -254,23 +253,29 @@ struct WaitingState: GameState {
 		let to = (row: size - 1 - move.to.row, col: size - 1 - move.to.col)
 		
 		if let battle = move.battle {
-			model.battle(attacker: from, target: to, result: battle, reveal: move.s_type)
+			model.battle(attacker: from, target: to, result: battle, reveal: move.s_type, winner: move.winner)
 		} else {
 			withAnimation {
 				model.move(from: from, to: to)
 			}
+			model.state = MyTurnState()
 		}
-		
-		model.state = MyTurnState()
 	}
 }
 
 struct GameOverState: GameState {
-	var textMsg: String { "Game Over, you \(model.won ? "won!" : "lost...")" }
+	let textMsg: String
+	let showNextBtn = true
+	
+	init(won: Bool) {
+		textMsg = "Game Over, you \(won ? "won!" : "lost")"
+	}
 	
 	func onClick(square: Square) {}
 	
-	func next() {}
+	func next() {
+		//request new game
+	}
 	
 	func onReceive(data: Data) {
 		
