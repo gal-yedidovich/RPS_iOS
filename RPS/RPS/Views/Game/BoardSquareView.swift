@@ -10,6 +10,7 @@ import SwiftUI
 struct BoardSquareView: View {
 	var onClick: (Square)->()
 	var square: Square
+	@Environment(\.squareSize) var squareSize: CGFloat
 	
 	var body: some View {
 		Button { onClick(square) } label: {
@@ -24,7 +25,7 @@ struct BoardSquareView: View {
 					.opacity(square.hidden ? 0.65 : 1)
 			}
 		}
-		.frame(width: 45, height: 45)
+		.frame(width: squareSize, height: squareSize)
 		.disabled(!square.isMine && !square.highlighted)
 	}
 	

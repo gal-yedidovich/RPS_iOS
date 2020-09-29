@@ -18,7 +18,6 @@ struct GameView: View {
 				BoardView(board: model.board, onClick: model.onClick)
 				
 				VStack {
-					
 					Text(model.message)
 						.foregroundColor(.secondary)
 					

@@ -9,27 +9,31 @@ import SwiftUI
 
 let boardMargin: CGFloat = 6
 
-//TODO: responsive UI
-func test(geometry: GeometryProxy) -> CGFloat {
-	let insets = geometry.safeAreaInsets
+func calcSize(from geometry: GeometryProxy) -> CGFloat {
 	let windowSize = geometry.size
-	let width = windowSize.width - (insets.leading + insets.trailing)
-	let height = windowSize.height - (insets.bottom + insets.top)
+	let minValue = min(windowSize.width, windowSize.height)
 	
-	let minValue = min(width, height)
-	return (minValue / CGFloat(BOARD_SIZE)) - boardMargin
+	let boardSize = CGFloat(BOARD_SIZE)
+	return (minValue - (boardMargin * (boardSize + 1))) / boardSize
 }
 
 struct BoardView: View {
 	var board: [[Square]]
 	var onClick: (Square)->()
+//	@Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
+//	@Environment(\.horizontalSizeClass) var horizontalSizeClass: UserInterfaceSizeClass?
+
 	
     var body: some View {
-		VStack(spacing: boardMargin) {
-			ForEach(0..<board.count) { row in
-				BoardRowView(squares: board[row], onClick: onClick)
+		GeometryReader(content: { geometry in
+			VStack(spacing: boardMargin) {
+				ForEach(0..<board.count) { row in
+					BoardRowView(squares: board[row], onClick: onClick)
+				}
 			}
-		}
+			.position(x: geometry.size.width / 2, y: geometry.size.width / 2)
+			.squareSize(calcSize(from: geometry))
+		})
     }
 }
 
