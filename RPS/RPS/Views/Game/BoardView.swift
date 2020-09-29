@@ -17,7 +17,7 @@ func test(geometry: GeometryProxy) -> CGFloat {
 	let height = windowSize.height - (insets.bottom + insets.top)
 	
 	let minValue = min(width, height)
-	return (minValue / 7) - boardMargin
+	return (minValue / CGFloat(BOARD_SIZE)) - boardMargin
 }
 
 struct BoardView: View {
@@ -41,11 +41,11 @@ struct BoardView_Previews: PreviewProvider {
 	static func createSquares() -> [[Square]] {
 		var board: [[Square]] = []
 		
-		for i in 0..<7 {
+		for i in 0..<BOARD_SIZE {
 			var row: [Square] = []
 			
-			for j in 0..<7 {
-				let type: PawnType = i < 2 ? .Trap : i < 5 ? .None : .Flag
+			for j in 0..<BOARD_SIZE {
+				let type: PawnType = i < 2 ? .Hidden : .None
 				row.append(Square(position: (i, j), isMine: i >= 5, type: type))
 			}
 			

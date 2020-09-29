@@ -7,10 +7,6 @@
 
 import SwiftUI
 
-struct Shared {
-	static var token: Int!
-}
-
 struct MainView: View {
 	@ObservedObject var gameModel = GameModel.instance
 	@ObservedObject var lobbyModel = LobbyModel.instance

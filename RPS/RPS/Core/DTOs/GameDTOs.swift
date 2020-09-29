@@ -53,7 +53,7 @@ struct MoveRespDto: Decodable {
 }
 
 struct DrawDecision: Encodable {
-	let token = Shared.token
+	let token = Global.token
 	let gameId = GameModel.instance.gameId
 	let decision: String
 }

@@ -20,9 +20,11 @@ class GameModel: ObservableObject {
 	@Published var gameId: Int = -1 {
 		didSet {
 			if gameId != -1 {
-				NetworkClient.Game.connect(with: Shared.token)
+				NetworkClient.Game.connect(with: Global.token)
+				NetworkClient.Lobby.disconnect()
 			} else {
-				//TODO: disconnect
+				NetworkClient.Lobby.connect(with: Global.token)
+				NetworkClient.Game.disconnect()
 			}
 		}
 	}
@@ -52,7 +54,7 @@ class GameModel: ObservableObject {
 	func randomRPS() {
 		loading = true
 		
-		let json = ["token": Shared.token, "gameId": gameId]
+		let json = ["token": Global.token, "gameId": gameId]
 		HttpClient.Game.send(to: .random, body: json) { result in
 			self.loading = false
 			self.randomized = true
@@ -178,8 +180,9 @@ class GameModel: ObservableObject {
 		}
 		
 		post(delay: 2.5) {
+			let myTurn = self.draw.myTurn!
+			self.draw = DrawModel() //resets the model
 			withAnimation {
-				self.draw = DrawModel() //resets the model
 				if drawResult.result > 0 {
 					self.move(from: from, to: to)
 				} else if drawResult.result < 0 {
@@ -188,7 +191,7 @@ class GameModel: ObservableObject {
 						$0.isMine = false
 					}
 				} else {
-					self.draw.show(from: from, to: to, myTurn: self.draw.myTurn)
+					self.draw.show(from: from, to: to, myTurn: myTurn)
 				}
 			}
 		}
@@ -224,10 +227,10 @@ class GameModel: ObservableObject {
 	private static var initialBaord: [[Square]] {
 		var board: [[Square]] = []
 		
-		for i in 0..<7 {
+		for i in 0..<BOARD_SIZE {
 			var row: [Square] = []
 			
-			for j in 0..<7 {
+			for j in 0..<BOARD_SIZE {
 				row.append(Square(position: (i, j), isMine: i >= 5, type: i < 2 ? .Hidden : .None))
 			}
 			

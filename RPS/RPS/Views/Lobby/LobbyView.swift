@@ -39,7 +39,7 @@ struct LobbyView: View {
 							if case let .success(login) = result {
 								withAnimation {
 									model.token = login.token
-									Shared.token = login.token
+									Global.token = login.token
 								}
 								NetworkClient.Lobby.connect(with: login.token)
 							}

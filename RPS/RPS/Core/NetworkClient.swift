@@ -49,7 +49,12 @@ class NetworkClient {
 		}
 	}
 	
-	func listen() {
+	func disconnect() {
+		inputStream.close()
+		outputStream.close()
+	}
+	
+	private func listen() {
 		async {
 			while true {
 				//read message size
@@ -81,7 +86,7 @@ class NetworkClient {
 		}
 	}
 	
-	func send(data: Data) {
+	private func send(data: Data) {
 		self.outputStream.write(data: data)
 	}
 }

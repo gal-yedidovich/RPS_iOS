@@ -9,8 +9,6 @@ import Foundation
 import SwiftUI
 import BasicExtensions
 
-let BOARD_SIZE = 7
-
 protocol GameState {
 	var textMsg: String { get }
 	
@@ -41,7 +39,7 @@ struct SelectFlagState: GameState {
 	func onClick(square: Square) {
 		model.loading = true
 		let (row, col) = square.position
-		let body = SelectSquareDto(token: Shared.token, gameId: model.gameId, row: row, col: col)
+		let body = SelectSquareDto(token: Global.token, gameId: model.gameId, row: row, col: col)
 		HttpClient.Game.send(to: .flag, body: body) { result in
 			model.loading = false
 			
@@ -69,7 +67,7 @@ struct SelectTrapState: GameState {
 		
 		model.loading = true
 		let (row, col) = square.position
-		let body = SelectSquareDto(token: Shared.token, gameId: model.gameId, row: row, col: col)
+		let body = SelectSquareDto(token: Global.token, gameId: model.gameId, row: row, col: col)
 		HttpClient.Game.send(to: .trap, body: body) { result in
 			model.loading = false
 			
@@ -100,14 +98,14 @@ struct RandomRpsState: GameState {
 	func next() {
 		guard model.randomized else { return }
 		
-		let body = ReadyDto(token: Shared.token, gameId: model.gameId)
+		let body = ReadyDto(token: Global.token, gameId: model.gameId)
 		HttpClient.Game.send(to: .ready, body: body) { (result: Result<ReadyResponseDto>) in
 			guard case let .success(payload) = result else {
 				print("error")
 				return
 			}
 			
-			let myTurn = payload.turn == Shared.token
+			let myTurn = payload.turn == Global.token
 			if model.opponentReady {
 				model.state = myTurn ? MyTurnState() : WaitingState()
 			} else {
@@ -125,7 +123,7 @@ struct RandomRpsState: GameState {
 	}
 	
 	private func hideMySquares() {
-		let squares = model.board[5..<7].flatMap { $0 }
+		let squares = model.board[5..<BOARD_SIZE].flatMap { $0 }
 		
 		for i in 0..<squares.count {
 			withAnimation(Animation.default.delay(Double(i) / 8)) {
@@ -210,7 +208,7 @@ struct SelectMoveState: GameState {
 		if isHighlighted {
 			let from =  SquarePosition(row: selected.position.row, col: selected.position.col)
 			let to =  SquarePosition(row: square.position.row, col: square.position.col)
-			let body = MoveDto(token: Shared.token, gameId: model.gameId, from: from, to: to)
+			let body = MoveDto(token: Global.token, gameId: model.gameId, from: from, to: to)
 			
 			HttpClient.Game.send(to: .move, body: body) { (result: Result<MoveRespDto>) in
 				guard case let .success(payload) = result else { return }

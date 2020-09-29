@@ -73,5 +73,5 @@ struct AnswerDto: Codable {
 	let game_id: Int
 	let accept: Bool
 	var type = "answer"
-	var target_token = Shared.token
+	var target_token = Global.token
 }
