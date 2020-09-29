@@ -14,7 +14,9 @@ protocol GameState {
 	
 	var showRandomBtn: Bool { get }
 	
-	var  showNextBtn: Bool { get }
+	var showNextBtn: Bool { get }
+	
+	var isGameOver: Bool { get }
 	
 	func onClick(square: Square)
 	
@@ -31,6 +33,8 @@ extension GameState {
 	var showRandomBtn: Bool { false }
 	
 	var showNextBtn: Bool { false }
+	
+	var isGameOver: Bool { false }
 }
 
 struct SelectFlagState: GameState {
@@ -264,6 +268,7 @@ struct WaitingState: GameState {
 struct GameOverState: GameState {
 	let textMsg: String
 	let showNextBtn = true
+	let isGameOver = true
 	
 	init(won: Bool) {
 		textMsg = "Game Over, you \(won ? "won!" : "lost")"
@@ -272,11 +277,31 @@ struct GameOverState: GameState {
 	func onClick(square: Square) {}
 	
 	func next() {
-		//request new game
+		guard !model.loading else { return }
+		
+		HttpClient.Game.send(to: .newGame, body: NewGameDto(gameId: model.gameId)) { result in
+			guard case .success = result else { return }
+			
+			model.loading = true
+		}
 	}
 	
 	func onReceive(data: Data) {
-		
+		switch GameMsgType.from(data: data) {
+		case .newGame:
+			model.activeAlert = .newGameInvite
+			
+		case .newGameAnswer:
+			model.loading = false
+			let answer: NewGameAnswerDto = try! .from(json: data)
+			
+			if answer.accept {
+				model.resetGame()
+			} else {
+				model.activeAlert = .refusedInvite
+			}
+		default: break //ignore
+		}
 	}
 }
  

@@ -71,7 +71,7 @@ enum HttpClient {
 			 move = "/game/move",
 			 draw = "/game/draw",
 			 forfeit = "/game/forfeit",
-			 nameGame = "/game/new"
+			 newGame = "/game/new"
 	}
 }
 
@@ -96,6 +96,8 @@ enum GameMsgType: String {
 	case opponentReady = "opponent ready"
 	case move = "move"
 	case draw = "draw"
+	case newGame = "new_game"
+	case newGameAnswer = "new_game_answer"
 	
 	static func from(data: Data) -> GameMsgType? {
 		guard let type: SocketMessageType = try? .from(json: data) else { return nil }

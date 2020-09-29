@@ -38,7 +38,7 @@ struct GameView: View {
 							Button {
 								model.next()
 							} label: {
-								Text("Next")
+								Text(model.isGameOver ? "New Game" :  "Next")
 							}
 							.padding(10)
 							.background(Color.blue)
@@ -59,6 +59,49 @@ struct GameView: View {
 				DrawView(model: GameModel.instance, draw: $model.draw)
 			}
 		}
+		.alert(item: $model.activeAlert, content: { alert in
+			switch model.activeAlert {
+			case .refusedInvite:
+				return Alert(title: Text("Opponent refused to play again."), dismissButton: .default(Text("OK"), action: {
+					model.finish()
+				}))
+			default:
+				let handler = { (accept: Bool) in
+					let body = SendNewGameAnswerDto(accept: accept, gameId: model.gameId)
+					HttpClient.Game.send(to: .newGame, body: body) { _ in }
+				}
+				
+				return Alert(title: Text("Opponent wants play again."), message: nil,
+							 primaryButton: .default(Text("Yes"), action: {
+								handler(true)
+								model.resetGame()
+							 }), secondaryButton: .cancel({
+								handler(false)
+								model.finish()
+							}))
+			}
+			
+		})
+		//		.alert(isPresented: $model.showOppnentInviteNewGame, content: {
+		//			let handler = { (accept: Bool) in
+		//				let body = SendNewGameAnswerDto(accept: accept, gameId: model.gameId)
+		//				HttpClient.Game.send(to: .newGame, body: body) { _ in }
+		//			}
+		//
+		//			return Alert(title: Text("Opponent wants play again."), message: nil,
+		//						 primaryButton: .default(Text("Yes"), action: {
+		//							handler(true)
+		//							model.resetGame()
+		//						 }), secondaryButton: .cancel({
+		//							handler(false)
+		//							model.finish()
+		//						}))
+		//		})
+		//		.alert(isPresented: $model.showOpponentRefusedNewGame) {
+		//			Alert(title: Text("Opponent refused to play again."), dismissButton: .default(Text("OK"), action: {
+		//				model.finish()
+		//			}))
+		//		}
 	}
 }
 

@@ -62,3 +62,21 @@ struct DrawResult: Decodable {
 	let opponent: String
 	let result: Int
 }
+
+struct NewGameDto: Encodable {
+	let req_type = "new_game"
+	let token = Global.token
+	let gameId: Int
+}
+
+struct NewGameAnswerDto: Decodable {
+	let accept: Bool
+	let name: String
+}
+
+struct SendNewGameAnswerDto: Encodable {
+	let req_type = "answer"
+	let token = Global.token
+	let accept: Bool
+	let gameId: Int
+}

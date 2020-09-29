@@ -14,9 +14,10 @@ class GameModel: ObservableObject {
 	
 	@Published var board: [[Square]] = initialBaord 
 	@Published var state: GameState = SelectFlagState()
+	@Published var draw = DrawModel()
 	@Published var loading = false
 	@Published var opponentReady = false
-	@Published var draw = DrawModel()
+	@Published var activeAlert: ActiveAlert?
 	@Published var gameId: Int = -1 {
 		didSet {
 			if gameId != -1 {
@@ -28,8 +29,7 @@ class GameModel: ObservableObject {
 			}
 		}
 	}
-	var won = false
-	var randomized = false
+	private(set) var randomized = false
 	
 	private init() {
 		NetworkClient.Game.callback = onReceive(data:)
@@ -76,7 +76,16 @@ class GameModel: ObservableObject {
 	
 	var showNextBtn: Bool { state.showNextBtn }
 	
+	var isGameOver: Bool { state.isGameOver }
+	
 	var message: String { state.textMsg }
+	
+	func resetGame() {
+		board = Self.initialBaord
+		state = SelectFlagState()
+		loading = false
+		draw = DrawModel()
+	}
 	
 	func move(from src: Square, to dest: Square) {
 		move(from: src.position, to: dest.position)
@@ -198,18 +207,21 @@ class GameModel: ObservableObject {
 	}
 	
 	func gameOver(won: Bool) {
-		self.won = won
 		state = GameOverState(won: won)
 		killSquares(mine: !won)
 	}
 	
-	private func killSquares(mine: Bool) {
+	func finish() {
+		gameId = -1 //go back to board
+	}
+	
+	private func killSquares(mine killMine: Bool) {
 		let positions = board.flatMap { row in
 			row.filter { square in
-				if won {
-					return !square.isMine && square.type != .None
-				} else {
+				if killMine {
 					return square.isMine
+				} else {
+					return !square.isMine && square.type != .None
 				}
 			}.map { $0.position }
 		}
@@ -241,6 +253,10 @@ class GameModel: ObservableObject {
 	}
 }
 
+enum ActiveAlert: Int ,Identifiable {
+	case newGameInvite, refusedInvite
+	var id: Int { rawValue }
+}
 
 extension Array where Element == Array<Square> {
 	mutating func mutate(at position: Position, block: (inout Square)->()) {
