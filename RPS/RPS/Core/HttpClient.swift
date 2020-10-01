@@ -98,6 +98,7 @@ enum GameMsgType: String {
 	case draw = "draw"
 	case newGame = "new_game"
 	case newGameAnswer = "new_game_answer"
+	case opponentQuit = "forfeit"
 	
 	static func from(data: Data) -> GameMsgType? {
 		guard let type: SocketMessageType = try? .from(json: data) else { return nil }

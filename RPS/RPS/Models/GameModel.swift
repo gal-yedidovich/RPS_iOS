@@ -26,6 +26,7 @@ class GameModel: ObservableObject {
 			} else {
 				NetworkClient.Lobby.connect(with: Global.token)
 				NetworkClient.Game.disconnect()
+				resetGame()
 			}
 		}
 	}
@@ -40,6 +41,12 @@ class GameModel: ObservableObject {
 			onReceivedDraw(data: data)
 			return
 		}
+		
+		if GameMsgType.from(data: data) == .opponentQuit {
+			activeAlert = .opponentQuit
+			return
+		}
+		
 		state.onReceive(data: data)
 	}
 	
@@ -211,6 +218,11 @@ class GameModel: ObservableObject {
 		killSquares(mine: !won)
 	}
 	
+	func forfeit() {
+		HttpClient.Game.send(to: .forfeit, body: ["token": Global.token, "gameId": gameId]) { _ in }
+		withAnimation { finish() }
+	}
+	
 	func finish() {
 		gameId = -1 //go back to board
 	}
@@ -254,7 +266,7 @@ class GameModel: ObservableObject {
 }
 
 enum ActiveAlert: Int ,Identifiable {
-	case newGameInvite, refusedInvite
+	case newGameInvite, refusedInvite, quit, opponentQuit
 	var id: Int { rawValue }
 }
 

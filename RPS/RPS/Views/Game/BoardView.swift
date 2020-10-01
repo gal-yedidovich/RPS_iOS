@@ -22,7 +22,6 @@ struct BoardView: View {
 	var onClick: (Square)->()
 //	@Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
 //	@Environment(\.horizontalSizeClass) var horizontalSizeClass: UserInterfaceSizeClass?
-
 	
     var body: some View {
 		GeometryReader(content: { geometry in
