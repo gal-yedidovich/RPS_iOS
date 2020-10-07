@@ -20,8 +20,6 @@ func calcSize(from geometry: GeometryProxy) -> CGFloat {
 struct BoardView: View {
 	var board: [[Square]]
 	var onClick: (Square)->()
-//	@Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
-//	@Environment(\.horizontalSizeClass) var horizontalSizeClass: UserInterfaceSizeClass?
 	
     var body: some View {
 		GeometryReader(content: { geometry in

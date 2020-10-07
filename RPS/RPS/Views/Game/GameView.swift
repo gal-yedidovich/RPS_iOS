@@ -10,9 +10,10 @@ import BasicExtensions
 
 struct GameView: View {
 	@ObservedObject var model: GameModel
+	@Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
+//	@Environment(\.horizontalSizeClass) var horizontalSizeClass: UserInterfaceSizeClass?
 	
 	var body: some View {
-		
 		NavigationView {
 			ZStack {
 				VStack(spacing: 30) {

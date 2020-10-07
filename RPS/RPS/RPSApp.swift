@@ -12,6 +12,7 @@ struct RPSApp: App {
     var body: some Scene {
         WindowGroup {
             MainView()
+				.navigationViewStyle(StackNavigationViewStyle())
         }
     }
 }

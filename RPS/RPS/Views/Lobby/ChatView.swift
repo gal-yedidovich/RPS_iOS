@@ -8,36 +8,17 @@
 import SwiftUI
 import BasicExtensions
 
-class Testi: ObservableObject {
-	@Published var testo = true
-}
-
 struct ChatView: View {
 	var token: Int
-	@Binding var messages: [Message] {
-		didSet {
-			test.testo.toggle()
-		}
-	}
+	@Binding var messages: [Message]
 	@State var newMessage: String = ""
-	@StateObject var test = Testi()
 	
     var body: some View {
 		VStack {
 			ScrollView {
-				ScrollViewReader { scroll in
-					LazyVStack {
-						ForEach(messages) {
-							ChatMessageView(message: $0)
-						}
-					}.onReceive(test.$testo, perform: { _ in
-						if messages.count > 0 {
-							scroll.scrollTo(messages.last!)
-						}
-					}).onAppear {
-						if messages.count > 0 {
-							scroll.scrollTo(messages.last!)
-						}
+				LazyVStack {
+					ForEach(messages) {
+						ChatMessageView(message: $0)
 					}
 				}
 			}
@@ -47,17 +28,17 @@ struct ChatView: View {
 					.disabled(newMessage.isEmpty)
 					.textFieldStyle(RoundedBorderTextFieldStyle())
 					.padding([.leading, .vertical])
+				
 				Button(action: send, label: {
 					Image(systemName: "paperplane")
 				})
 				.padding()
-				.padding(.trailing, 5)
+				.padding(.trailing, 8)
 			}
 		}
     }
 	
 	func send() {
-		test.testo.toggle()
 		let date = Date()
 		let body = NewMessageDto(token: token, time: Int64(date.timeIntervalSince1970), msg: newMessage)
 		HttpClient.Lobby.send(to: .chat, body: body) { result in
@@ -65,7 +46,6 @@ struct ChatView: View {
 				messages += [Message(text: newMessage, sender: "", isMe: true, date: date)]
 				newMessage = ""
 			}
-			
 		}
 	}
 }
