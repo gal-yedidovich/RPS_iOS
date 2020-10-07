@@ -14,7 +14,11 @@ struct SquareSize: EnvironmentKey {
 extension EnvironmentValues {
 	var squareSize: CGFloat {
 		get { self[SquareSize] }
-		set { self[SquareSize] = newValue }
+		set {
+			if newValue > 0 {
+				self[SquareSize] = newValue
+			}
+		}
 	}
 }
 

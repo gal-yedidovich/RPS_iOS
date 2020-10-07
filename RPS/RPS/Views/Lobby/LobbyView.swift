@@ -11,10 +11,27 @@ import Network
 
 struct LobbyView: View {
 	@ObservedObject var model: LobbyModel
+	@State private var loginError: String?
 	
 	var body: some View {
 		if let name = model.name {
-			if let token = model.token {
+			if let loginError = loginError {
+				BasicAlertView {
+					VStack {
+						Text(loginError)
+							.padding(.top)
+						
+						Button {
+							withAnimation {
+								self.loginError = nil
+							}
+						} label: {
+							Text("Retry")
+						}
+						.padding()
+					}
+				}
+			} else if let token = model.token {
 				TabView {
 					PlayersView(model: model)
 						.onAppear {
@@ -34,20 +51,28 @@ struct LobbyView: View {
 			} else {
 				ProgressView()
 					.onAppear {
-						HttpClient.Lobby.send(to: .login, body: ["name": name]) { (result: Result<LoginDto>) in
-							
-							if case let .success(login) = result {
-								withAnimation {
-									model.token = login.token
-									Global.token = login.token
-								}
-								NetworkClient.Lobby.connect(with: login.token)
-							}
-						}
+						requestToken(name: name)
 					}
 			}
 		} else {
 			LoginView(token: $model.token, name: $model.name)
+		}
+	}
+	
+	func requestToken(name: String) {
+		HttpClient.Lobby.send(to: .login, body: ["name": name]) { (result: Response<LoginDto>) in
+			switch result {
+			case .success(let login):
+				withAnimation {
+					model.token = login.token
+					Global.token = login.token
+				}
+				NetworkClient.Lobby.connect(with: login.token)
+			case .error(let error):
+				withAnimation {
+					loginError = "error: \(error.localizedDescription)"
+				}
+			}
 		}
 	}
 	
@@ -69,7 +94,7 @@ struct LobbyView: View {
 	}
 	
 	func requestLobby(token: Int) {
-		HttpClient.Lobby.send(to: .lobbyPlayers, body: ["token": token]) { (result: Result<LobbyPlayersDto>) in
+		HttpClient.Lobby.send(to: .lobbyPlayers, body: ["token": token]) { (result: Response<LobbyPlayersDto>) in
 			if case let .success(lobby) = result {
 				model.lobbyPlayers = lobby.player_list
 			}

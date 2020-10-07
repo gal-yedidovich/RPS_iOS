@@ -14,7 +14,7 @@ enum HttpClient {
 	
 	private var baseUrl: String { "http://127.0.0.1:\(port)" }
 	
-	func send<Response: Decodable>(to endpoint: EndPoint, body: Encodable, completion: @escaping (Result<Response>)->()) {
+	func send<ResponseType: Decodable>(to endpoint: EndPoint, body: Encodable, completion: @escaping (Response<ResponseType>)->()) {
 		let req = URLRequest(url: "\(baseUrl)\(endpoint.rawValue)")
 			.set(method: .POST)
 			.set(body: body.json())
@@ -36,7 +36,7 @@ enum HttpClient {
 		}).resume()
 	}
 	
-	func send(to endpoint: EndPoint, body: Encodable, completion: @escaping (Result<Data>)->()) {
+	func send(to endpoint: EndPoint, body: Encodable, completion: @escaping (Response<Data>)->()) {
 		let req = URLRequest(url: "\(baseUrl)\(endpoint.rawValue)")
 			.set(method: .POST)
 			.set(body: body.json())
@@ -110,7 +110,7 @@ enum Errors: Error {
 	case text(String)
 }
 
-enum Result<Type> {
+enum Response<Type> {
 	case success(Type)
 	case error(Error)
 }

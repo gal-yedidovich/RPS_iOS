@@ -11,6 +11,7 @@
 		262EB68825188CED00BBF316 /* ChatMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262EB68725188CED00BBF316 /* ChatMessageView.swift */; };
 		2688F0DC2520C8E9007819E6 /* DrawView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2688F0DB2520C8E9007819E6 /* DrawView.swift */; };
 		268EBD20252E69470040A3DA /* GameMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268EBD1F252E69470040A3DA /* GameMenuView.swift */; };
+		268EBD37252E782B0040A3DA /* BasicAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268EBD36252E782B0040A3DA /* BasicAlertView.swift */; };
 		26A5B29C25163DCA00D04A58 /* RPSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A5B29B25163DCA00D04A58 /* RPSApp.swift */; };
 		26A5B29E25163DCA00D04A58 /* LobbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A5B29D25163DCA00D04A58 /* LobbyView.swift */; };
 		26A5B2A025163DCB00D04A58 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A5B29F25163DCB00D04A58 /* Assets.xcassets */; };
@@ -61,6 +62,7 @@
 		2683D1D2252B58EE004DC0B9 /* RPS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RPS.entitlements; sourceTree = "<group>"; };
 		2688F0DB2520C8E9007819E6 /* DrawView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawView.swift; sourceTree = "<group>"; };
 		268EBD1F252E69470040A3DA /* GameMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMenuView.swift; sourceTree = "<group>"; };
+		268EBD36252E782B0040A3DA /* BasicAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicAlertView.swift; sourceTree = "<group>"; };
 		26A5B29825163DCA00D04A58 /* RPS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RPS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		26A5B29B25163DCA00D04A58 /* RPSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RPSApp.swift; sourceTree = "<group>"; };
 		26A5B29D25163DCA00D04A58 /* LobbyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LobbyView.swift; sourceTree = "<group>"; };
@@ -119,6 +121,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		268EBD2C252E77A40040A3DA /* Misc */ = {
+			isa = PBXGroup;
+			children = (
+				268EBD36252E782B0040A3DA /* BasicAlertView.swift */,
+			);
+			path = Misc;
+			sourceTree = "<group>";
+		};
 		26A5B28F25163DCA00D04A58 = {
 			isa = PBXGroup;
 			children = (
@@ -195,6 +205,7 @@
 		26A5B2D82516408F00D04A58 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				268EBD2C252E77A40040A3DA /* Misc */,
 				26EFDDD12519FBDF00B6D994 /* Game */,
 				26EFDDD02519FBD600B6D994 /* Lobby */,
 				26EFDDC82519FB9B00B6D994 /* MainView.swift */,
@@ -411,6 +422,7 @@
 				262EB68325188B4A00BBF316 /* ChatView.swift in Sources */,
 				26EFA30C251F48F30009708A /* LobbyDTOs.swift in Sources */,
 				2688F0DC2520C8E9007819E6 /* DrawView.swift in Sources */,
+				268EBD37252E782B0040A3DA /* BasicAlertView.swift in Sources */,
 				26EFA306251CE9730009708A /* GameState.swift in Sources */,
 				26A5B29C25163DCA00D04A58 /* RPSApp.swift in Sources */,
 				26E4D46225236618000D3213 /* Global.swift in Sources */,

@@ -26,18 +26,10 @@ struct PlayersView: View {
 	
 	func sendInvatation(invitee: LobbyPlayer)  {
 		let invitation = SendInvatationDto(sender_token: model.token!, target_token: invitee.token, req_type: "invite", name: model.name!)
-		HttpClient.Lobby.send(to: .invite, body: invitation) { (result: Result<InvitationResponseDto>) in
+		HttpClient.Lobby.send(to: .invite, body: invitation) { (result: Response<InvitationResponseDto>) in
 			if case .success = result {
 				model.invitationPending = true
 			}
-//			post {
-//				switch result {
-//				case .success(_):
-//					model.invitationPending = true
-//				case .failure(_, _): break
-//				case .error(let error): print("\(#function) error, \(error)")
-//				}
-//			}
 		}
 	}
 }

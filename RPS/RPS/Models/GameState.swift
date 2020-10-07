@@ -103,7 +103,7 @@ struct RandomRpsState: GameState {
 		guard model.randomized else { return }
 		
 		let body = ReadyDto(token: Global.token, gameId: model.gameId)
-		HttpClient.Game.send(to: .ready, body: body) { (result: Result<ReadyResponseDto>) in
+		HttpClient.Game.send(to: .ready, body: body) { (result: Response<ReadyResponseDto>) in
 			guard case let .success(payload) = result else {
 				print("error")
 				return
@@ -214,7 +214,7 @@ struct SelectMoveState: GameState {
 			let to =  SquarePosition(row: square.position.row, col: square.position.col)
 			let body = MoveDto(token: Global.token, gameId: model.gameId, from: from, to: to)
 			
-			HttpClient.Game.send(to: .move, body: body) { (result: Result<MoveRespDto>) in
+			HttpClient.Game.send(to: .move, body: body) { (result: Response<MoveRespDto>) in
 				guard case let .success(payload) = result else { return }
 				
 				if let battle = payload.battle { //do battle

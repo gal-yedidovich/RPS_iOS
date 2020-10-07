@@ -13,9 +13,7 @@ struct DrawView: View {
 	@Binding var draw: DrawModel
 	
 	var body: some View {
-		ZStack {
-			Color(UIColor.black.withAlphaComponent(0.5))
-			
+		BasicAlertView {
 			VStack {
 				HStack {
 					ForEach([PawnType.Rock, .Paper, .Scissors]) { type in
@@ -42,13 +40,7 @@ struct DrawView: View {
 					drawButton(type: .Scissors)
 				}
 			}
-			.padding()
-			.background(Color(UIColor.darkGray))
-			.cornerRadius(10)
-			.animation(.default)
 		}
-		.edgesIgnoringSafeArea(.all)
-		.id("drawAlert")
 	}
 	
 	func drawButton(type: PawnType, isMine: Bool = true) -> some View {
