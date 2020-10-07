@@ -18,47 +18,14 @@ struct GameView: View {
 			ZStack {
 				VStack(spacing: 30) {
 					BoardView(board: model.board, onClick: model.onClick)
+						.padding()
 					
-					VStack {
-						Text(model.message)
-							.foregroundColor(.secondary)
-						
-						HStack {
-							if model.showRandomBtn {
-								Button(action: model.randomRPS) {
-									Text("Random RPS")
-								}
-								.padding(10)
-								.background(Color.blue)
-								.foregroundColor(.white)
-								.cornerRadius(10)
-							}
-							
-							Spacer()
-							
-							if model.showNextBtn {
-								Button {
-									model.next()
-								} label: {
-									Text(model.isGameOver ? "New Game" :  "Next")
-								}
-								.padding(10)
-								.background(Color.blue)
-								.foregroundColor(.white)
-								.cornerRadius(10)
-							}
-						}.padding(.horizontal)
-						
-						if model.loading {
-							ProgressView()
-						}
-						
-						Spacer()
-					}
+					GameMenuView(model: model)
+						.frame(height: 150, alignment: .top)
 				}
 				
 				if model.draw.showDraw {
-					DrawView(model: GameModel.instance, draw: $model.draw)
+					DrawView(model: model, draw: $model.draw)
 				}
 				
 			}
@@ -97,6 +64,7 @@ struct GameView: View {
 
 struct GameView_Previews: PreviewProvider {
 	static var previews: some View {
-		GameView(model: GameModel.instance)
+		GameView(model: .instance)
+			.environment(\.colorScheme, .dark)
 	}
 }

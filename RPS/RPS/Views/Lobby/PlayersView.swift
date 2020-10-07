@@ -44,6 +44,6 @@ struct PlayersView: View {
 
 struct PlayersView_Previews: PreviewProvider {
 	static var previews: some View {
-		PlayersView(model: LobbyModel.instance)
+		PlayersView(model: .instance)
 	}
 }

@@ -28,7 +28,7 @@ struct BoardView: View {
 					BoardRowView(squares: board[row], onClick: onClick)
 				}
 			}
-			.position(x: geometry.size.width / 2, y: geometry.size.width / 2)
+			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
 			.squareSize(calcSize(from: geometry))
 		})
     }

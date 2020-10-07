@@ -70,7 +70,7 @@ struct DrawView: View {
 
 struct DrawView_Previews: PreviewProvider {
 	static var previews: some View {
-		DrawView(model: GameModel.instance, draw: Binding.constant(DrawModel()))
+		DrawView(model: .instance, draw: Binding.constant(DrawModel()))
 	}
 }
 

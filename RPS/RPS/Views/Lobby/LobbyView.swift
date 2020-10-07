@@ -79,6 +79,6 @@ struct LobbyView: View {
 
 struct LobbyView_Previews: PreviewProvider {
 	static var previews: some View {
-		LobbyView(model: LobbyModel.instance)
+		LobbyView(model: .instance)
 	}
 }

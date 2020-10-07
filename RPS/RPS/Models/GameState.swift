@@ -26,7 +26,7 @@ protocol GameState {
 }
 
 extension GameState {
-	var model: GameModel { GameModel.instance }
+	var model: GameModel { .instance }
 	
 	var mainButtonText: String? { nil }
 	
